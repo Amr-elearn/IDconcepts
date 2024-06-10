@@ -146,6 +146,7 @@
         const messagesContainer = document.getElementById('chatbot-messages');
 
         function sendMessage() {
+            console.log('sendMessage function called');
             const inputField = document.getElementById('chatbot-input-field');
             const message = inputField.value.trim();
             if (message) {
@@ -159,6 +160,7 @@
         }
 
         function displayMessage(message, sender) {
+            console.log('displayMessage function called');
             const messageElement = document.createElement('div');
             messageElement.classList.add('chatbot-message');
             if (sender === 'user') {
