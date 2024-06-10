@@ -5,7 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Instructional Design Board</title>
     <style>
-        /* Your existing CSS */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: navy;
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #333;
+        }
+        nav a {
+            color: white;
+            padding: 1rem;
+            text-decoration: none;
+            text-align: center;
+        }
+        nav a:hover {
+            background-color: navy;
+        }
+        .container {
+            padding: 2rem;
+        }
+        .section {
+            margin-bottom: 2rem;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        /* Chatbot styles */
+        #chatbot {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            background-color: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        #chatbot-header {
+            background-color: navy;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+        #chatbot-messages {
+            padding: 10px;
+            height: 200px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        .chatbot-message {
+            margin-bottom: 10px;
+        }
+        .user-message {
+            text-align: right;
+            color: navy;
+        }
+        #chatbot-input {
+            display: flex;
+            border-top: 1px solid #ccc;
+        }
+        #chatbot-input input {
+            flex-grow: 1;
+            padding: 10px;
+            border: none;
+            border-right: 1px solid #ccc;
+        }
+        #chatbot-input button {
+            padding: 10px;
+            background-color: navy;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #chatbot-input button:hover {
+            background-color: #004080;
+        }
     </style>
 </head>
 <body>
@@ -51,17 +145,14 @@
     <script>
         const messagesContainer = document.getElementById('chatbot-messages');
 
-        function sendMessage() {
+        async function sendMessage() {
             console.log('sendMessage function called');
             const inputField = document.getElementById('chatbot-input-field');
             const message = inputField.value.trim();
             if (message) {
                 displayMessage(message, 'user');
                 inputField.value = '';
-                // Simulate bot response
-                setTimeout(() => {
-                    displayMessage('This is a simulated response.', 'bot');
-                }, 1000);
+                await fetchBotResponse(message);
             }
         }
 
@@ -77,21 +168,31 @@
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
-        async function fetchData() {
+        async function fetchBotResponse(userMessage) {
             try {
-                const response = await fetch('https://api.example.com/data');
+                const response = await fetch('https://api.openai.com/v1/engines/davinci-codex/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer YOUR_OPENAI_API_KEY`
+                    },
+                    body: JSON.stringify({
+                        prompt: userMessage,
+                        max_tokens: 50
+                    })
+                });
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
                 }
                 const data = await response.json();
-                console.log(data);
-                // Process your data here
+                displayMessage(data.choices[0].text.trim(), 'bot');
             } catch (error) {
                 console.error('There has been a problem with your fetch operation:', error);
             }
         }
 
-        fetchData();
+        // Initial call to fetchBotResponse for testing
+        // fetchBotResponse('Hello, chatbot!');
     </script>
 </body>
 </html>
